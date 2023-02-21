@@ -16,6 +16,7 @@ const RoleModel = require("./roles");
 const SpecificationModel = require("./specifications");
 const StreetModel = require("./streets");
 const OrderModel = require("./orders");
+const MenuModel = require("./menu");
 
 const setAssociation = () => {
   // set association for option model and attribute model (1 - many)

@@ -12,26 +12,39 @@ const categories = {
     return instance.get(url);
   },
 
-  postCategoryAdmin(name, listBrand) {
+  postCategoryAdmin(name, thumbnail, listBrand) {
     const url = "/api/v1/categories/admin";
     return instance.post(
       url,
       {
         name,
+        thumbnail,
         listBrand,
       },
       { headers: authHeader() }
     );
   },
 
-  putCategoryAdmin(idCategory, name, listBrand) {
+  putCategoryAdmin(idCategory, name, thumbnail, listBrand) {
     const url = "/api/v1/categories/admin";
     return instance.put(
       url,
       {
         idCategory,
         name,
+        thumbnail,
         listBrand,
+      },
+      { headers: authHeader() }
+    );
+  },
+
+  putOrderCategoryAdmin(listCategory) {
+    const url = "/api/v1/categories/admin/update-order-category";
+    return instance.put(
+      url,
+      {
+        listCategory,
       },
       { headers: authHeader() }
     );

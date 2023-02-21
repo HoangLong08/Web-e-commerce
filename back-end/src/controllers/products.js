@@ -10,6 +10,7 @@ const getListProduct = async (req, res) => {
   try {
     const getData = await Category.findAll({
       include: [Product],
+      order: [["orders", "asc"]],
     });
     res.status(200).json({
       status: "200",
@@ -35,12 +36,13 @@ const getDetailProduct = async (req, res) => {
         message: "get detail product success",
         data: getData,
       });
+    } else {
+      res.status(404).json({
+        status: "404",
+        message: "data not found",
+        data: null,
+      });
     }
-    res.status(404).json({
-      status: "404",
-      message: "data not found",
-      data: null,
-    });
   } catch (error) {
     res.status(500).json({
       message: error.message || "error server",
@@ -127,13 +129,17 @@ const getListProductBySearch = async (req, res) => {
 
 const getListProductAdmin = async (req, res) => {
   try {
-    const { name } = req.query;
-    const getData = await Product.findAll({
+    const limit = 10;
+    const { name = "", brands = "", order = "desc", page = 1 } = req.query;
+    let offset = 0 + (page - 1) * limit;
+    const getData = await Product.findAndCountAll({
       where: {
         name: {
           [Op.like]: `%${name}%`,
         },
       },
+      offset: offset,
+      limit: limit,
       include: [Category, Brand],
     });
     res.status(200).json({
@@ -293,11 +299,18 @@ const putProductByIdAdmin = async (req, res) => {
 const deleteProductByIdAdmin = async (req, res) => {
   try {
     const { idProduct } = req.params;
+    const getDataProduct = await Product.findByPk(idProduct);
+    if (getDataProduct) {
+      const nameFile = getData?.thumbnail?.split("/")?.reverse()?.[0];
+      removeSync(nameFile, req, res);
+    }
+
     const getData = await Product.destroy({
       where: {
         id: idProduct,
       },
     });
+
     res.status(200).json({
       status: "200",
       message: "delete product success",

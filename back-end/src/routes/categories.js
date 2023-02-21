@@ -7,6 +7,11 @@ const { verify } = require("../../utils/verify");
 router.get("/admin", verify, categoryController.getListCategoryAdmin);
 router.post("/admin", verify, categoryController.postCategoryAdmin);
 router.put("/admin", verify, categoryController.putCategoryAdmin);
+router.put(
+  "/admin/update-order-category",
+  verify,
+  categoryController.putOrderCategoryAdmin
+);
 router.delete(
   "/admin/:idCategory",
   verify,

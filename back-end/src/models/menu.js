@@ -1,8 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const db = require("../../utils/database");
 
-const CategoryModel = db.define(
-  "Category",
+const MenuModel = db.define(
+  "Menu",
   {
     id: {
       type: DataTypes.UUID,
@@ -10,20 +10,25 @@ const CategoryModel = db.define(
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      unique: true,
-    },
-    thumbnail: {
+    icon: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    orders: {
+    title: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    level: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      // unique: true,
-      // autoIncrement: true,
+      allowNull: true,
+    },
+    ParentId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   {
@@ -31,4 +36,4 @@ const CategoryModel = db.define(
   }
 );
 
-module.exports = CategoryModel;
+module.exports = MenuModel;

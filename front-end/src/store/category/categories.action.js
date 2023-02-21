@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import categories from "../../api/categories";
 
 const getListCategoryAdminAction = createAsyncThunk(
-  "categories/getAllBrandAdminAction",
+  "categories/getListCategoryAdminAction",
   async (params, thunkAPI) => {
     try {
       const { name } = params;
@@ -46,9 +46,9 @@ const postCategoryAdminAction = createAsyncThunk(
   "categories/postCategoryAdminAction",
   async (params, thunkAPI) => {
     try {
-      const { nameCategory, listBrand } = params;
+      const { nameCategory, thumbnail, listBrand } = params;
       const res = await categories
-        .postCategoryAdmin(nameCategory, listBrand)
+        .postCategoryAdmin(nameCategory, thumbnail, listBrand)
         .then((response) => {
           if (response) {
             return response;
@@ -66,9 +66,9 @@ const putCategoryAdminAction = createAsyncThunk(
   "categories/putCategoryAdminAction",
   async (params, thunkAPI) => {
     try {
-      const { idCategory, nameCategory, listBrand } = params;
+      const { idCategory, nameCategory, thumbnail, listBrand } = params;
       const res = await categories
-        .putCategoryAdmin(idCategory, nameCategory, listBrand)
+        .putCategoryAdmin(idCategory, nameCategory, thumbnail, listBrand)
         .then((response) => {
           if (response) {
             return response;
@@ -103,10 +103,31 @@ const deleteCategoryAdminAction = createAsyncThunk(
   }
 );
 
+const putOrderCategoryAdminAction = createAsyncThunk(
+  "categories/putOrderCategoryAdminAction",
+  async (params, thunkAPI) => {
+    try {
+      const { listCategory } = params;
+      const res = await categories
+        .putOrderCategoryAdmin(listCategory)
+        .then((response) => {
+          if (response) {
+            return response;
+          }
+          return [];
+        });
+      return res;
+    } catch (error) {
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
+
 export {
   getListCategoryAdminAction,
   postCategoryAdminAction,
   getDetailCategoryAction,
   putCategoryAdminAction,
   deleteCategoryAdminAction,
+  putOrderCategoryAdminAction,
 };

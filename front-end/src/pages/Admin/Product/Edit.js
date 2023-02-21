@@ -163,7 +163,7 @@ function EditProduct() {
       )}
       <FormProduct type="edit" />
       <Modal
-        title="Modal 1000px width"
+        title="Thông tin sản phẩm"
         centered
         open={open}
         onOk={() => setOpen(false)}

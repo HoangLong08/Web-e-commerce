@@ -7,8 +7,8 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import { isEmpty } from "lodash";
-import FormInput from "../../../layouts/FormInput";
-import CKeditor from "../../../layouts/CKeditor";
+import FormInput from "layouts/FormInput";
+import CKeditor from "layouts/CKeditor";
 import { useDispatch, useSelector } from "react-redux";
 import { getListCategoryAdminAction } from "store/category/categories.action";
 import { postListBrandByIdCategoryAdminAction } from "store/brand/brands.action";
