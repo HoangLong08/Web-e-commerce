@@ -23,8 +23,9 @@ const products = {
   },
 
   // admin
-  getListProductAdmin(name) {
-    const url = "/api/v1/products/admin" + `?name=` + name;
+  getListProductAdmin(name, page = 1) {
+    const url =
+      "/api/v1/products/admin" + `?name=` + name + `&page=` + parseInt(page);
     return instance.get(url, { headers: authHeader() });
   },
 

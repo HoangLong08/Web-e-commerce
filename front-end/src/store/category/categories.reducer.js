@@ -21,12 +21,17 @@ const categoriesSlice = createSlice({
 
     valueFormCategory: {
       name: "",
+      thumbnail: "",
       listBrand: [],
     },
   },
   reducers: {
     setValueFormCategoryName: (state, action) => {
       state.valueFormCategory.name = action.payload;
+    },
+
+    setValueFormCategoryThumbnail: (state, action) => {
+      state.valueFormCategory.thumbnail = action.payload;
     },
 
     setListBrandByCategory: (state, action) => {
@@ -103,6 +108,7 @@ const categoriesSlice = createSlice({
 
 export const {
   setValueFormCategoryName,
+  setValueFormCategoryThumbnail,
   setListBrandByCategory,
   setAddBrandByCategoryName,
   setDeleteBrandByCategoryName,

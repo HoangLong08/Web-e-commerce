@@ -161,12 +161,15 @@ function HeaderClient() {
   const dispatch = useDispatch();
   const paramFromUrl = getQueryParams(location.search);
   const authSlice = useSelector((state) => state.authSlice.infoAccount);
+
   const shoppingCart = useSelector(
     (state) => state.shoppingCartSlice.shoppingCart
   );
+
   const [open, setOpen] = useState(false);
   const [isOpenCategoryProduct, setIsOpenCategoryProduct] = useState(false);
   const [valueInput, setValueInput] = useState("");
+
   useEffect(() => {
     if (paramFromUrl.keyword) {
       setValueInput(paramFromUrl?.keyword?.replace("+", " ") || "");

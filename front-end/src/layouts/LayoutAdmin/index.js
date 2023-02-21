@@ -13,6 +13,7 @@ import {
   PieChartOutlined,
   SolutionOutlined,
   UserSwitchOutlined,
+  ApartmentOutlined,
 } from "@ant-design/icons";
 import "./style.css";
 
@@ -67,6 +68,12 @@ const arrMenu = [
     icon: <UserSwitchOutlined />,
     title: "Roles",
     link: "/management/admin/roles",
+    sub: [],
+  },
+  {
+    icon: <ApartmentOutlined />,
+    title: "Menu",
+    link: "/management/admin/menus",
     sub: [],
   },
 ];

@@ -17,11 +17,13 @@ const orderRouter = require("./src/routes/orders");
 const paymentRouter = require("./src/routes/payment");
 const rsRouter = require("./src/routes/rs");
 const dashboardRouter = require("./src/routes/dashboards");
+const menuRouter = require("./src/routes/menu");
+
 const executeAll = require("./craw-data");
 const db = require("./utils/database");
 
 const app = express();
-
+global.__basedir = __dirname;
 try {
   setAssociation();
   //craw -data from website the gioi di dong
@@ -74,6 +76,7 @@ app.use("/api/v1/payments/", paymentRouter);
 app.use("/api/v1/uploads/", uploadRouter);
 app.use("/api/v1/rs/", rsRouter);
 app.use("/api/v1/dashboards/", dashboardRouter);
+app.use("/api/v1/menu/", menuRouter);
 app.use(`/images`, express.static(__dirname + "/src/uploads"));
 
 app.listen(process.env.PORT || 5000, () => {

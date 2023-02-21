@@ -64,13 +64,15 @@ const getListProductAdminAction = createAsyncThunk(
   "products/getListProductAdminAction",
   async (params, thunkAPI) => {
     try {
-      const { name } = params;
-      const res = await products.getListProductAdmin(name).then((response) => {
-        if (response) {
-          return response;
-        }
-        return [];
-      });
+      const { name, page } = params;
+      const res = await products
+        .getListProductAdmin(name, page)
+        .then((response) => {
+          if (response) {
+            return response;
+          }
+          return [];
+        });
       return res;
     } catch (error) {
       return thunkAPI.rejectWithValue({ error: error.message });

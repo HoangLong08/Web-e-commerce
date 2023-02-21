@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, createSearchParams } from "react-router-dom";
 import {
   Button,
   Space,
@@ -20,7 +20,7 @@ import {
 import HeadPage from "../components/HeadPage";
 import TableAntd from "../components/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { formatCash } from "../../../utils";
+import { formatCash } from "utils";
 import {
   deleteMultipleProductByIdAdminAction,
   deleteProductByIdAdminAction,
@@ -32,8 +32,8 @@ import openNotificationWithIcon from "utils/notification";
 import { isEmpty } from "lodash";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
-import "./style.css";
 import { exportToCSV } from "utils/index";
+import "./style.css";
 
 const columns = [
   {
@@ -79,31 +79,63 @@ const columns = [
 
 const { Dragger } = Upload;
 
+const getQueryParams = (query) =>
+  window.location.search
+    .replace("?", "")
+    .split("&")
+    .map((e) => e.split("=").map(decodeURIComponent))
+    // eslint-disable-next-line no-sequences
+    .reduce((r, [k, v]) => ((r[k] = v), r), {});
+
 function Product() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const listProductAdmin = useSelector(
     (state) => state.productsSlice.listProductAdmin
   );
-
+  const paramFromUrl = getQueryParams(location.search);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [valueSearch, setValueSearch] = useState("");
   const [idProduct, setIdProduct] = useState("");
   const [typeExcel, setTypeExcel] = useState("");
   const [dataExcel, setDataExcel] = useState("");
+
+  const [paramUrl, setParamUrl] = useState({});
+
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [valueExportFile, setValueExportFile] = useState(1);
 
   const valueSearchDebounce = useDebounce(valueSearch, 500);
 
   useEffect(() => {
-    dispatch(
-      getListProductAdminAction({
-        name: valueSearchDebounce,
-      })
-    );
-  }, [dispatch, valueSearchDebounce]);
+    if (!isEmpty(location.search)) {
+      const paramFromUrl = getQueryParams(location.search);
+      dispatch(
+        getListProductAdminAction({
+          name: paramFromUrl?.name || "",
+          page: parseInt(paramFromUrl.page || 1),
+        })
+      );
+      setParamUrl(paramFromUrl);
+    } else {
+      dispatch(
+        getListProductAdminAction({
+          name: "",
+          page: 1,
+        })
+      );
+    }
+  }, [location.search, navigate, dispatch]);
+
+  useEffect(() => {
+    if (paramFromUrl.name) {
+      setValueSearch(paramFromUrl?.name?.replace("+", " ") || "");
+    } else {
+      setValueSearch("");
+    }
+  }, [paramFromUrl?.name]);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -135,7 +167,7 @@ function Product() {
 
   const handleOkExcel = async () => {
     if (typeExcel === "output") {
-      exportToCSV(listProductAdmin?.data?.data, "product_export_store");
+      exportToCSV(listProductAdmin?.data?.data?.rowss, "product_export_store");
     } else {
       openNotificationWithIcon("warning", "đang cập nhật tính năng");
     }
@@ -147,6 +179,22 @@ function Product() {
 
   const onChangeExportFile = (e) => {
     setValueExportFile(e.target.value);
+  };
+
+  const handleChangeTable = (pagination, filters, sorter) => {
+    // console.log("pagination, filters, sorter: ", pagination, filters, sorter);
+    const { current } = pagination;
+    setParamUrl({
+      ...paramUrl,
+      page: current,
+    });
+    navigate({
+      pathname: "/management/admin/products",
+      search: `?${createSearchParams({
+        ...paramUrl,
+        page: current,
+      })}`,
+    });
   };
 
   const importExcel = (file, addItem) => {
@@ -207,10 +255,10 @@ function Product() {
 
   const toggleSelectAll = () => {
     setSelectedRowKeys((keys) => {
-      if (keys.length === listProductAdmin?.data?.data?.length) {
+      if (keys.length === listProductAdmin?.data?.data?.rows?.length) {
         return [];
       } else {
-        return listProductAdmin?.data?.data?.map((r) => {
+        return listProductAdmin?.data?.data?.rows?.map((r) => {
           return r.id;
         });
       }
@@ -222,7 +270,7 @@ function Product() {
       checked={selectedRowKeys.length}
       indeterminate={
         selectedRowKeys.length > 0 &&
-        selectedRowKeys.length < listProductAdmin?.data?.data?.length
+        selectedRowKeys.length < listProductAdmin?.data?.data?.rows?.length
       }
       onChange={toggleSelectAll}
     />
@@ -256,7 +304,7 @@ function Product() {
   };
 
   const renderDataSource = () => {
-    return listProductAdmin?.data?.data?.map((item, index) => {
+    return listProductAdmin?.data?.data?.rows?.map((item, index) => {
       return {
         key: item.id,
         name: (
@@ -334,8 +382,16 @@ function Product() {
                 prefix={<SearchOutlined />}
                 style={{ width: "300px" }}
                 onChange={(e) => {
+                  navigate({
+                    pathname: "/management/admin/products",
+                    search: `?${createSearchParams({
+                      ...paramUrl,
+                      name: e.target.value,
+                    })}`,
+                  });
                   setValueSearch(e.target.value);
                 }}
+                value={valueSearch || ""}
               />
             </div>
           </div>
@@ -362,6 +418,9 @@ function Product() {
           data={renderDataSource()}
           tableHead={columns}
           loading={listProductAdmin.load}
+          current={parseInt(paramUrl?.page || 1)}
+          total={listProductAdmin.data?.data?.count}
+          onChange={handleChangeTable}
         />
       </div>
       <Modal
@@ -415,8 +474,8 @@ function Product() {
                 Đã chọn : {selectedRowKeys.length} sản phẩm
               </Radio>
               <Radio value={4} block>
-                {listProductAdmin?.data?.data?.length} products matching your
-                search
+                {listProductAdmin?.data?.data?.rows?.length} products matching
+                your search
               </Radio>
             </Space>
           </Radio.Group>

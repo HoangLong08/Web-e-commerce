@@ -11,6 +11,7 @@ import evaluateSlice from "./evaluate/evaluates.reducer";
 import dashboardSlice from "./dashboard/dashboard.reducer";
 import rsSlice from "./rs/rs.reducer";
 import orderSlice from "./order/order.reducer";
+import menusSlice from "./menu/menus.reducer";
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     dashboardSlice,
     rsSlice,
     orderSlice,
+    menusSlice,
   },
   devTools: true,
   middleware: (getDefaultMiddleware) =>

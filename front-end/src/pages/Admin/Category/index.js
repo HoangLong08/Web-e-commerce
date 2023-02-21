@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, Modal, Space } from "antd";
+import { Button, Input, Modal, Space, Image } from "antd";
 import {
   SearchOutlined,
   EditOutlined,
@@ -12,13 +12,14 @@ import TableAntd from "../components/Table";
 import { useDispatch, useSelector } from "react-redux";
 import FormCategory from "./Form";
 import { isEmpty } from "lodash";
-import { openNotificationWithIcon } from "../../../utils";
+import { openNotificationWithIcon } from "utils";
 import {
   deleteCategoryAdminAction,
   getDetailCategoryAction,
   getListCategoryAdminAction,
   postCategoryAdminAction,
   putCategoryAdminAction,
+  putOrderCategoryAdminAction,
 } from "store/category/categories.action";
 import useDebounce from "hooks/useDebounce";
 import {
@@ -27,7 +28,7 @@ import {
 } from "store/category/categories.reducer";
 import DragTableBody from "../components/DragTableBody";
 import update from "immutability-helper";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import "./style.css";
 
@@ -36,6 +37,11 @@ const columns = [
     title: "Title",
     dataIndex: "title",
     key: "title",
+  },
+  {
+    title: "Images",
+    dataIndex: "image",
+    key: "image",
   },
   {
     title: "Number of brands",
@@ -66,7 +72,10 @@ function Category() {
   const [idCategory, setIdCategory] = useState();
   const [valueSearch, setValueSearch] = useState("");
   const [data, setData] = useState([]);
+  const [sortData, setSortData] = useState([]);
+
   const valueSearchDebounce = useDebounce(valueSearch, 500);
+  const updateSortDataCategory = useDebounce(sortData, 1000);
 
   useEffect(() => {
     dispatch(
@@ -75,6 +84,26 @@ function Category() {
       })
     );
   }, [dispatch, valueSearchDebounce]);
+
+  useEffect(() => {
+    const arr = data?.map((item, index) => {
+      return {
+        ...item,
+        orders: index + 1,
+      };
+    });
+    // setData(arr);
+    setSortData(arr);
+  }, [data]);
+
+  useEffect(() => {
+    // update order of category
+    dispatch(
+      putOrderCategoryAdminAction({
+        listCategory: updateSortDataCategory,
+      })
+    );
+  }, [dispatch, updateSortDataCategory]);
 
   useEffect(() => {
     setData(listCategoryAdmin?.data?.data);
@@ -91,6 +120,7 @@ function Category() {
         putCategoryAdminAction({
           idCategory,
           nameCategory: valueFormCategory.name,
+          thumbnail: valueFormCategory.thumbnail,
           listBrand: valueFormCategory.listBrand,
         })
       );
@@ -104,6 +134,7 @@ function Category() {
       res = await dispatch(
         postCategoryAdminAction({
           nameCategory: valueFormCategory.name,
+          thumbnail: valueFormCategory.thumbnail,
           listBrand: valueFormCategory.listBrand,
         })
       );
@@ -136,7 +167,7 @@ function Category() {
 
   const moveRow = useCallback(
     (dragIndex, hoverIndex) => {
-      const dragRow = listCategoryAdmin?.data?.data?.[dragIndex];
+      const dragRow = data?.[dragIndex];
       setData(
         update(data, {
           $splice: [
@@ -154,6 +185,7 @@ function Category() {
       return {
         key: index,
         title: item.name,
+        image: <Image src={item.thumbnail} width={60} preview={false} />,
         brand: item.Brands.length,
         action: (
           <Space>

@@ -10,6 +10,7 @@ import EditProduct from "pages/Admin/Product/Edit";
 import NotFound from "pages/Error/NotFound";
 import Role from "pages/Admin/Role/index";
 import Employee from "pages/Admin/Employee/index";
+import Menu from "pages/Admin/Menu/index";
 
 const privateRoutes = [
   { path: "/management/admin/login", component: LoginAdmin, layout: null },
@@ -26,6 +27,7 @@ const privateRoutes = [
   { path: "/management/admin/employees", component: Employee },
   { path: "/management/admin/orders", component: Order },
   { path: "/management/admin/customers", component: Customer },
+  { path: "/management/admin/menus", component: Menu },
   { path: "*", component: NotFound, layout: null },
   { path: "/404", component: NotFound, layout: null },
 ];
